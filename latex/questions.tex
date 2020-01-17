@@ -1,0 +1,65 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+
+\title{Questions}
+\author{Konstantins Starovoitovs}
+\date{June 2019}
+
+\setlength{\parindent}{0}
+\setlength{\parskip}{1em}
+
+\begin{document}
+
+\maketitle
+
+\textbf{In the power law kernel phi we cant use scaling / calculate expected value explicitly as we did in the script? (so we need the char fn to calculate the exp value and get the correct scaling for unstable regime?)}
+
+\textbf{If the model doesn’t have the closed-form option pricing formula, we have problem deducing implied volatility? Why can’t use Black formula to imply?}
+
+\textbf{What effect are we trying to isolate / investigate by setting eps small?}
+
+\textbf{Short-time AND small-noise or Short-time XOR small-noise}
+
+I guess XOR.
+
+\textbf{Should forward variance always be a martingale?}
+
+I guess because it's tradeable.
+
+\textbf{Is it good to have time-varying mean reversion in generalized Rough Heston?}
+
+Previously it was remarkable that rough models fit very well with few parameters.
+
+\textbf{What's bad about infinite momenta?}
+
+\textbf{Why need true martingale for pricing?}
+
+\textbf{Why need implied volatility expansions? Why can’t they be calculated exactly?}
+
+Because we don’t have closed-form formula. Like in the SABR model. (http://web.math.ku.dk/~rolf/SABR.pdf)
+
+Idea: get small-noise / short-time pricing PDE and apply first order price correction to the Black-Scholes price.
+
+\textbf{If Rough Heston is highly tractable with its characteristic function, why are we interested in small noise expansion?}
+
+Actually the model is semi-analytic, since the solution of the fractional Ricatti has to be obtained numerically (which, however, is not an intensive task).
+
+\textbf{When to use ATM vs. AATM vs. OTM vs. MOTM? Which expansion is the correct one? Do these expansions yield different corrections?}
+
+\textbf{What is the advantage of rescaling? What can be "dropped" from the equation once we rescaled by $\varepsilon$?}
+
+\textbf{When to use small-time ($t \rightarrow 0$) and large-time ($t \rightarrow \infty$) asymptotics? What is the use of large-time asymptotics $X_t / t$?}
+
+\textbf{Gartner-Ellis theorem in a sense similar to Cramer theorem?}
+
+\textbf{What is exactly asymptotic smile?}
+
+Asymptotic approximations of implied volatility reveal information contained in implied volatility observations, and provide guidance for extrapolating implied volatility to unobserved strikes and expiries. Indeed, explicit formulas for a given model can connect, on one hand, information about the model’s parameters, and on the other hand, key features (such as level/slope/convexity with respect to strike/expiry) of the implied volatility skew/smile. This leads to an understanding of which specific parameters influence which specific smile features, and it facilitates numerical calibration of those parameters to implied volatility data. Moreover, asymptotic formulas suggest the proper functional forms to use for the purpose of parametrically extrapolating or interpolating a volatility skew.
+
+\textbf{How can I tell singular perturbation from regular perturbation problem?}
+
+\textbf{How to get rid from epsilon in expansions?}
+
+\textbf{How did we arrive at the scaling as in Rough Heston model?}
+
+\end{document}

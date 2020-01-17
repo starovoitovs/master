@@ -1,0 +1,140 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+
+\title{Wing behavior of the local volatility in rough Heston model}
+\author{Konstantins Starovoitovs}
+\date{2019}
+
+\setlength{\parindent}{0}
+\setlength{\parskip}{1em}
+
+\usepackage{physics}
+\usepackage[citestyle=alphabetic]{biblatex}
+\addbibresource{master.bib}
+
+\begin{document}
+
+\textbf{Conjecture.} $\sigma _ { \mathrm { loc } } ^ { 2 } ( k , T )$ is asymptotically linear in rough Heston.
+
+\section{Introduction}
+
+We start with the model
+
+$$
+\begin{aligned} d X _ { t } & = - \frac { 1 } { 2 } V _ { t } d t + \sqrt { V _ { t } } d B _ { t } \\ V _ { t } & = V _ { 0 } + \frac { 1 } { \Gamma ( \alpha ) } \int _ { 0 } ^ { t } ( t - s ) ^ { \alpha - 1 } \lambda \left( \theta - V _ { s } \right) d s + \frac { 1 } { \Gamma ( \alpha ) } \int _ { 0 } ^ { t } ( t - s ) ^ { \alpha - 1 } \nu \sqrt { V _ { s } } d W _ { s } \end{aligned}
+$$
+
+The mgf of Rough Heston model is given in \cite{FGS19} and reads as follows
+
+$$
+\mathbb { E } \left( e ^ { p X _ { t } } \right) = e ^ { V _ { 0 } I ^ { 1 - \alpha } \psi ( p , t ) + \lambda \theta I ^ { 1 } \psi ( p , t ) }
+$$
+
+where $\psi$ is a solution of fractional Riccati equation
+
+$$
+D ^ { \alpha } \psi ( p , t ) = \frac { 1 } { 2 } \left( p ^ { 2 } - p \right) + ( p \rho \nu - \lambda ) \psi ( p , t ) + \frac { 1 } { 2 } \nu ^ { 2 } \psi ( p , t ) ^ { 2 }.
+$$
+
+By the exponential decay of the Rough Heston mgf towards $\pm i\infty$, the transform pricing formulas hold (for call price and implied spot density), and therefore the Dupire volatility can be expressed by the following formula
+
+$$
+\sigma _ { \mathrm { loc } } ^ { 2 } ( k , T ) = \frac { 2 \partial _ { T } C ( K ) } { K ^ { 2 } D ( K , T ) } = \frac { 2 \int _ { - i \infty } ^ { i \infty } \frac { \partial _ { T } m ( s , T ) } { s ( s - 1 ) } e ^ { - k s } M ( s , T ) d s } { \int _ { - i \infty } ^ { i \infty } e ^ { - k s } M ( s , T ) d s }.
+$$
+
+We want to investigate the wing behavior of local volatility as $k \rightarrow \infty$. In order to investigate asymptotic behavior of the above integral, we want to apply Laplace method to the (contour) integral of the type
+
+$$
+\int _ { a } ^ { b } e ^ { - z p ( t ) } q ( t ) d t
+$$
+
+Simpler instance of the Laplace method for such contour integrals occurs when $\Re(z p(t)) $ attains its minimum value at on of the endpoints of the contour \cite{O97}. Otherwise we can split integral in two where the contour attains the above minimum, but we require $p'(t_0) = 0$ in the minimum. Since it's not necessarily the case, we need to deform the contour (which is simple in our case, since our contour is just a straight line, so we just translate the contour by $\hat s$ – saddlepoint).
+
+The discussion from the chapter 2 of \cite{FGS19} applies here as well and yields
+
+$$
+\sigma _ { \mathrm { loc } } ^ { 2 } ( k , T ) \approx \left. \frac { 2 \frac { \partial } { \partial T } m ( s , T ) } { s ( s - 1 ) } \right| _ { s = \hat { s } ( k , T ) }
+$$
+
+According to \cite{FG18} the above formula for local volatility is expected to work whenever the saddle point method is applicable.
+
+Therefore we are left with the task of finding the saddlepoint and calculating $\frac { \partial } { \partial T } m ( s , T ) }$. The classical Heston case was handled in \cite{FGGS10}. The situation is similar in the sense that we are dealing with an affine SV model, the difference is that we are now dealing with fractional Riccati equations.
+
+\section{Asymptotics of rough Heston}
+
+We are interested in the asymptotic behavior of
+
+$$
+\frac { \partial } { \partial s } m ( s , t ) \qquad \text{ and } \qquad \frac { \partial } { \partial T } m ( s , T ).
+$$
+
+For this we analyze the fractional Riccati equations near criticality, using higher order Euler estimates. We need to calculate the constants $A$ and $\beta$ from \cite{FGGS10} which are specific to rough Heston. We need to use the tools and estimates from \cite{GGP18} to get to them. Need to obtain some estimate of type (2.8) from \cite{FGGS10}. Notice that fractional Ricatti iff VIE, so \cite{GGP18} investigates the explosion times of the VIE.
+
+\cite{RO96} suggests that the solution of the Volterra equations are asymptotically as $t \rightarrow T^*(s)$ (equation (3.2) with $r \equiv 1$, $h \equiv 0$, $\mu = 2$, where the parameter is vvol of Heston)
+
+$$
+\psi(s, t) \sim \frac{\Gamma (2\alpha)}{\frac 12 \nu^2 \Gamma(\alpha)} (T^*(s) - t) ^{-\alpha}
+$$
+
+$$
+\frac{\partial}{\partial t} \psi(s, t) \sim \frac{\alpha \Gamma (2\alpha)}{\frac 12 \nu^2 \Gamma(\alpha)} (T^*(s) - t) ^{-\alpha - 1}
+$$
+
+
+From this we should try to establish an estimate similar to Lemma 9 in \cite{FGGS10}. Since $T^*$ is continuously differentiable (why?) we follow \cite{FGGS10} and get
+
+$$
+T ^ { * } ( s ) - T ^ { * } \left( s _ { + } \right) = \left( s _ { + } - s \right) \left( \sigma + O \left( s _ { + } - s \right) \right) \sim \sigma \left( s _ { + } - s \right)
+$$
+
+where $\sigma$ is the critical slope.
+
+For the log-mgf we obtain
+
+$$
+m(s, T) \sim \frac{2v_0}{\nu^2} \frac{\Gamma(2\alpha)\Gamma(1-\alpha)}{ \Gamma(\alpha)} (\sigma(s_+ - s))^{-2\alpha+1}
+$$
+
+$$
+\frac{\partial}{\partial s} m(s, T) \sim \frac{2v_0}{\nu^2} \frac{(2\alpha-1)\Gamma(2\alpha)\Gamma(1-\alpha)}{ \Gamma(\alpha)} \sigma ^ {-2\alpha+1}(s_+ - s)^{-2\alpha}
+$$
+
+$$
+\frac{\partial}{\partial T} m(s, T) \sim \frac{2v_0}{\nu^2} \frac{(2\alpha-1)\Gamma(2\alpha)\Gamma(1-\alpha)}{ \Gamma(\alpha)} (\sigma(s_+ - s))^{-2\alpha}
+$$
+
+Define
+
+$$
+\beta ^ {-2\alpha}: = \frac{2v_0}{\nu^2} \frac{(2\alpha-1)\Gamma(2\alpha)\Gamma(1-\alpha)}{ \Gamma(\alpha)}\sigma ^ {-2\alpha+1}
+$$
+
+and then for the approximate saddle point we get
+
+$$
+s_+ - \hat s \sim  k ^{-\frac {1}{2 \alpha}}/\beta.
+$$
+
+We plug in the saddle point approximation to obtain
+
+$$
+\left.\frac { \partial } { \partial T } m  ( s , T ) \right| _ { s = \hat { s } } \sim \frac{2v_0}{\nu^2} \frac{(2\alpha-1)\Gamma(2\alpha)\Gamma(1-\alpha)}{ \Gamma(\alpha)} \sigma^ {-2\alpha} \beta ^{2\alpha} k = \frac k\sigma
+$$
+
+So the only missing ingridient in the asymptotic behavior of the asymptotic local volatility is the critical slope $\sigma$ for the rough Heston model. Ansatz for the slope calculation could probably be found in \cite{K08}.
+
+\section{Saddle point}
+
+For this we need to find the approximate saddle point in the rough Heston model. The saddle point will depend on the critical moment $s_+$. Critical moments of the rough Heston model are analyzed in \cite{GGP18}. In particular, the explosion time is finite if and only if it is finite for the classical Heston model. However, unlike in the classical Heston model, where the explosion times can be given explicitly, moment explosion in the fractional Riccati (equivalently non-linear Volterra integral equation – VIE) is a harder problem.
+
+\begin{itemize}
+    \item Justify form of the local volatility above (due to exponential blow-up)
+    \item Find the equivalent of the formula (4.3) for rough Heston (which will yield the saddle point);
+    \item Find the equivalent of the formula (4.4) for rough Heston (which will yield the asymptotic local volatility);
+    \item Find the critical slope from (4.2);
+    \item Make sure $\hat { s } ( k , T ) \rightarrow s _ { + } ( T )$
+\end{itemize}
+
+\printbibliography
+
+\end{document}

@@ -1,0 +1,63 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+
+\title{Rough Heston}
+\author{Konstantins Starovoitovs}
+\date{June 2019}
+
+\setlength{\parindent}{0}
+\setlength{\parskip}{1em}
+
+\begin{document}
+
+\maketitle
+
+\section{Hedging}
+
+\subsection{Perfect hedging in rough Heston models}
+
+Based on paper by El Euch and Rosenbaum.
+    
+Rough Heston (and any stochastic volatility model) is Markov on the infinite-dimensional space of (spot, forward variance curve). Hence we can consider Ito differential of $\mathrm d C_t$ using Frechet derivative w.r.t. forward variance curve. We cannot trade the whole variance curve, but there are approximations.
+
+Another approach is hedging with Clark-Ocone formula (easier for Rough Bergomi since forward curve defined explicitly, for Rough Heston we only have the dynamic of the SDE).
+
+We can encode the entire forward variance curve in the time-varying mean-reversion parameter.
+
+Roughly speaking, we need to know $\mathrm E [f(S_T)|\mathcal F_t]$. Conditional law of the Rough Heston will impact the time-varying mean-reversion.
+
+Characteristic function is obtained from the Hawkes processes with Mittag-Leffler kernel (where integrators converge to their continuous counterparts in Skorokhod topology). Mittag-Leffler kernel can be considered a heavier-tailed version of exponential decay. From the characteristic function there are Fourier transform methods for pricing.
+
+\section{Asymptotics}
+
+Small-time and large-time asymptotics by Forde, Gerhold and Smith.
+
+Calculate characteristic function of the Rough Heston by making use of the affine structure of Rough Heston. Calculate mgf. which will lead to asymptotic smile and tractable expressions for vol skew and convexity.
+
+\section{Implied volatility}
+
+Implied volatility can be expressed in terms log of the option price and log-strike, similar to
+
+$$
+V ^ { 2 } \sim \frac { k ^ { 2 } } { 2 L _ { - } }
+$$
+
+\section{Fractional calculus}
+
+\subsection{Solution with fractional power series}
+
+Consider power series $$
+f ( t ) \stackrel { ! } { = } \sum _ { n = 1 } ^ { \infty } a _ { n } ( u ) t ^ { \alpha n }
+$$
+
+and fractional operators
+
+$$
+I _ { t } ^ { \alpha } t ^ { \nu } = t ^ { \nu + \alpha } \frac { \Gamma ( \nu + 1 ) } { \Gamma ( \nu + \alpha + 1 ) }
+$$
+
+$$
+D _ { t } ^ { \alpha } t ^ { \nu } = t ^ { \nu - \alpha } \frac { \Gamma ( \nu + 1 ) } { \Gamma ( \nu - \alpha + 1 ) }
+$$
+
+\end{document}
