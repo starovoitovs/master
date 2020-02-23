@@ -1,72 +1,85 @@
-from scipy.special import gamma
 import numpy as np
-from numpy import vectorize
-import matplotlib.pyplot as plt
-
-# rough heston params
-alpha = 0.75
-l = 1
-rho = 0.1
-nu = 1
-
-# discretization params
-
-T = 10
-N = 1000
-
-delta = T / N
-
-t = np.linspace(0, delta * N, N + 1)
-
-# generate matrix A
-
-a = np.zeros((N + 2, N + 2))
-
-for k in range(0, N + 1):
-    for j in range(0, k + 2):
-        if j == 0:
-            a[j, k + 1] = delta ** alpha / gamma(alpha + 2) * (k ** (alpha + 1) - (k - alpha) * ((k + 1) ** alpha))
-        elif j == k:
-            a[j, k + 1] = delta ** alpha / gamma(alpha + 2)
-        else:
-            a[j, k + 1] = delta ** alpha / gamma(alpha + 2) * (
-                    (k - j + 2) ** (alpha + 1) + (k - j) ** (alpha + 1) - 2 * (k - j + 1) ** (alpha + 1))
-
-# generate matrix B
-
-b = np.zeros((N + 2, N + 2))
-
-for k in range(0, N + 1):
-    for j in range(0, k + 1):
-        b[j, k + 1] = delta ** alpha / gamma(alpha + 1) * ((k - j + 1) ** alpha - (k - j) ** alpha)
-
-# solver
-
-F = lambda p, x: (p ** 2 - p) / 2 + (p * rho * nu - l) * x + (nu ** 2) / 2 * (x ** 2)
-F = vectorize(F)
-
-def critical_value(p):
-    h = [0]
-    kk = 1
-    try:
-        while kk < N + 1:
-            hp = np.sum(b[0:kk, kk] * F(p, h[0:kk]))
-            val = np.sum(a[0:kk, kk] * F(p, h[0:kk])) + a[kk, kk] * F(p, hp)
-            if val > 1e4:
-                raise OverflowError()
-            h.append(val)
-            kk += 1
-    except OverflowError as err:
-        # plt.plot(t[0:kk], h)
-        # plt.show()
-        return t[kk]
+from scipy.special import gamma as Gamma
 
 
-x = np.linspace(2, 10, 9)
-y = []
+# [ER16] Theorem 4.1 and Section 5
 
-for v in np.linspace(2, 10, 9):
-    y.append(critical_value(v))
+class VIESolver:
 
-plt.plot(x, y)
-plt.show()
+    def __init__(self, params):
+
+        assert -1 / np.sqrt(2) < params['RHO'] < 1 / np.sqrt(2)
+
+        self.delta = 0
+        self.n = 0
+        self.a = np.zeros(())
+        self.b = np.zeros(())
+
+        self._params = params
+
+    def _update_mat_a(self):
+
+        self.a = np.zeros((self.n + 2, self.n + 2))
+
+        for k in range(0, self.n + 1):
+            for j in range(0, k + 2):
+                if j == 0:
+                    self.a[j, k + 1] = self.delta ** self._params['ALPHA'] / Gamma(self._params['ALPHA'] + 2) * \
+                                       (k ** (self._params['ALPHA'] + 1) - (k - self._params['ALPHA']) * ((k + 1) ** self._params['ALPHA']))
+                elif j == k:
+                    self.a[j, k + 1] = self.delta ** self._params['ALPHA'] / Gamma(self._params['ALPHA'] + 2)
+                else:
+                    self.a[j, k + 1] = self.delta ** self._params['ALPHA'] / Gamma(self._params['ALPHA'] + 2) * \
+                                       ((k - j + 2) ** (self._params['ALPHA'] + 1) + (k - j) ** (self._params['ALPHA'] + 1) - 2 * (k - j + 1) ** (self._params['ALPHA'] + 1))
+
+    def _update_mat_b(self):
+
+        self.b = np.zeros((self.n + 2, self.n + 2))
+
+        for k in range(0, self.n + 1):
+            for j in range(0, k + 1):
+                self.b[j, k + 1] = self.delta ** self._params['ALPHA'] / Gamma(self._params['ALPHA'] + 1) * \
+                                   ((k - j + 1) ** self._params['ALPHA'] - (k - j) ** self._params['ALPHA'])
+
+    def solve(self, p, t0, t1, n):
+
+        def f(z):
+            return (- p ** 2 - 1j * p) / 2 + \
+                   (p * self._params['RHO'] * self._params['XI'] * 1j - self._params['LAMBDA']) * z + \
+                   (self._params['XI'] ** 2) / 2 * (z ** 2)
+
+        _delta = (t1 - t0) / n
+
+        if _delta != self.delta or n != self.n:
+            self.delta = _delta
+            self.n = n
+
+            # update matrices
+            self._update_mat_a()
+            self._update_mat_b()
+
+        x = np.linspace(t0, t1, self.n + 1)
+        y = np.array([0])
+
+        k = 1
+
+        while k < self.n + 1:
+            try:
+
+                hp = np.sum(self.b[0:k, k] * np.vectorize(f)(y[0:k]))
+                val = np.sum(self.a[0:k, k] * np.vectorize(f)(y[0:k])) + self.a[k, k] * np.vectorize(f)(hp)
+
+                # use with care
+                if val > 1e3:
+                    raise OverflowError()
+
+                y = np.append(y, val)
+                k += 1
+
+            except OverflowError:
+                x = x[slice(len(y))]
+                break
+
+        assert len(x) == len(y)
+
+        return x, y
