@@ -8,6 +8,8 @@ params['ER16'] = {
     'XI': 1,
     'V0': 0.04,
     'VBAR': 0.2,
+    'SPOT': 1,
+    'RATE': 0,
 }
 
 # Gerhold, Gerstenecker, Pinter (2018)
@@ -30,6 +32,18 @@ params['GR19'] = {
     'XI': 0.4,
     'V0': 0.4,
     'VBAR': 0.04,
+}
+
+# FGGS18
+params['FGGS18'] = {
+    'ALPHA': 1,
+    'V0': 0.0654,
+    'VBAR': 0.0707,
+    'LAMBDA': 0.6067,
+    'XI': 0.2928,
+    'RHO': -0.7571,
+    'SPOT': 1,
+    'RATE': 0,
 }
 
 # https://www.mathworks.com/help/fininst/optbyhestonni.html#d117e211346
@@ -60,32 +74,34 @@ params['HESTON2'] = {
 params['HESTON3'] = {
     'ALPHA': 1,
     'RATE': 0,
-    'V0': 0.04,
-    'VBAR': 0.06,
-    'LAMBDA': 1.5,
-    'XI': 0.7,
-    'RHO': 0,
+    'V0': 0.4,
+    'VBAR': 0.6,
+    'LAMBDA': 1,
+    'XI': 0.2,
+    'RHO': -0.1,
     'SPOT': 1,
 }
 
 # custom
 params['CUSTOM'] = {
     'ALPHA': 0.6,
-    'LAMBDA': 0.1,
-    'RHO': -0.6,
-    'XI': 0.7,
-    'V0': 0.25,
-    'VBAR': 0.2,
+    'LAMBDA': 1,
+    'RHO': 0.1,
+    'XI': 0.8,
+    'V0': 0.5,
+    'VBAR': 0.5,
     'SPOT': 1,
     'RATE': 0,
 }
 
-# Friz, Gerhold, Gulisashvili, Sturm
-params['FGGS18'] = {
-    'ALPHA': 1,
-    'V0': 0.0654,
-    'VBAR': 0.0707,
-    'LAMBDA': 0.6067,
-    'XI': 0.2928,
-    'RHO': -0.7571,
-}
+# # custom
+# params['CUSTOM'] = {
+#     'ALPHA': 0.6,
+#     'LAMBDA': 1,
+#     'RHO': 0.1,
+#     'XI': 1,
+#     'V0': 0.04,
+#     'VBAR': 0.2,
+#     'SPOT': 1,
+#     'RATE': 0,
+# }

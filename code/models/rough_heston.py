@@ -1,11 +1,10 @@
 import numpy as np
-from scipy.interpolate import interp1d
+from scipy.integrate import quad
 from scipy.optimize import newton
 from scipy.special import gamma as Gamma
 
-from fourier import fourier_call, fourier_call_dampened_itm
-from vie import VIESolver
-from xutils import fracderivative
+from fourier import fourier_call_dampened_itm
+from volterra import VIESolver
 
 
 def h_pade_small_time(u, t, params):
@@ -86,7 +85,7 @@ def rough_heston_cf_pade(u, t, params, n=100):
                   1j * u * (np.log(params['SPOT']) + params['RATE'] * t))
 
 
-def rough_heston_cf_adams(u, t, params, n=100):
+def rough_heston_cf_adams(u, t, params, n=100, entire=False):
 
     solver = VIESolver(params)
     xs, ys = solver.solve(u, 0, t, n)
@@ -97,10 +96,9 @@ def rough_heston_cf_adams(u, t, params, n=100):
     int1 = np.cumsum(ys) * h
 
     if 1/2 < params['ALPHA'] < 1:
-        # fintalpha = np.vectorize(fracderivative)(lambda s: interp1d(xs, ys)(s), xs, -(1 - params['ALPHA']))
         pwr = -(1 - params['ALPHA'])
         coeffs = np.cumprod([1.] + [(1 - (pwr + 1) / j) for j in range(1, len(xs))])
-        # fintalpha = np.sum(ys * np.flip(coeffs)) / h ** pwr
+        # discretization according to Podlubny
         fintalpha = np.array([np.sum(np.flip(coeffs[0:i]) * ys[0:i]) for i in range(1, len(xs) + 1)])
     elif params['ALPHA'] == 1:
         fintalpha = ys
@@ -111,10 +109,14 @@ def rough_heston_cf_adams(u, t, params, n=100):
                 params['V0'] * fintalpha +
                 1j * u * (np.log(params['SPOT']) + params['RATE'] * xs))
 
+    if entire:
+        return cf
+
     return cf[-1]
 
 
 # [GGP18] Algorithms 7.5 and 7.6
+# exact calculation only for the left wing
 def rough_heston_critical_time(u, params, n=100):
 
     def c1(s): return s * (s - 1) / 2
@@ -143,11 +145,63 @@ def rough_heston_critical_time(u, params, n=100):
         return np.abs(a[-1]) ** (-1 / params['ALPHA'] / n)
 
 
-# okay i guess here is actually left moment
-def rough_heston_critical_moment(t, params):
-    root = newton(lambda u: rough_heston_critical_time(u, params) - t, x0=20)
+# calculating left or right critical moment based on the sign of RHO
+def rough_heston_critical_moment(t, params, critical_time=None):
+    if critical_time is None:
+        critical_time = lambda u: rough_heston_critical_time(u, params)
+
+    x0 = -2 if params['RHO'] <= 0 else 2
+    root = newton(lambda u: critical_time(u) - t, x0=x0)
     return root
 
 
-def rough_heston_fourier_call(ttm, strike, params, damp):
-    return fourier_call_dampened_itm(strike, ttm, rough_heston_cf_adams, params, damp)
+# note that we return (-1) * derivative
+def rough_heston_critical_slope(ttm, params, critical_time=None, critical_moment=None):
+    if critical_time is None:
+        critical_time = lambda u: rough_heston_critical_time(u, params)
+
+    if critical_moment is None:
+        critical_moment = rough_heston_critical_moment(ttm, params)
+
+    eps = np.sqrt(np.finfo(float).eps) * (1.0 + critical_moment)
+    sigma = (critical_time(critical_moment + eps) - critical_time(critical_moment - eps)) / (2.0 * eps)
+
+    return - sigma
+
+
+def rough_heston_fourier_call(ttm, strike, params, damp=0.3, cutoff=np.inf):
+    return fourier_call_dampened_itm(strike, ttm, rough_heston_cf_adams, params, damp, cutoff)
+
+
+# k is log-strike
+# on refined (4.7)
+def rough_heston_implied_variance_asymptotic(ttm, log_strike, params, critical_time=None, critical_moment=None):
+
+    if critical_moment is None:
+        critical_moment = rough_heston_critical_moment(ttm, params)
+
+    if critical_time is None:
+        critical_time = lambda u: rough_heston_critical_time(u, params)
+
+    theta = 2 * Gamma(2 * params['ALPHA']) / Gamma(params['ALPHA']) / params['XI'] ** 2
+
+    def f2(s):
+        return s ** -params['ALPHA'] * (1 + s) ** -params['ALPHA']
+
+    lambda0 = params['V0'] * theta * Gamma(2 * params['ALPHA'] - 1) / Gamma(params['ALPHA']) / ttm
+    # lambda1 = ...
+
+    slope = rough_heston_critical_slope(ttm, params, critical_time=critical_time, critical_moment=critical_moment)
+    beta = (lambda0 * (2 * params['ALPHA'] - 1) * slope ** (1 - 2 * params['ALPHA'])) ** (1/2/params['ALPHA'])
+
+    # a1 = ...
+    a2 = 2 * beta / (2 * params['ALPHA'] - 1)
+    a3 = critical_moment + 1
+
+    b1 = np.sqrt(2) * (np.sqrt(a3 - 1) - np.sqrt(a3 - 2))
+    b2 = a2 / np.sqrt(2) * (1 / np.sqrt(a3 - 2) - 1 / np.sqrt(a3 - 1))
+    b3 = 1 / np.sqrt(2) * (3/4 - 1/4 / params['ALPHA']) * (1 / np.sqrt(a3 - 1) - 1 / np.sqrt(a3 - 2))
+
+    print(f"b1: {b1}; b2: {b2}; b3: {b3}")
+
+    return (b1 * log_strike ** 0.5 + b2 * log_strike ** (1/2 - 1/2/params['ALPHA'])) ** 2 / ttm

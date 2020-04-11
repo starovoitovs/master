@@ -4,12 +4,11 @@ import numpy as np
 import datetime
 import os
 import matplotlib.pyplot as plt
-from scipy.interpolate import interp1d
 
 from fourier import fft_calls
-from heston import heston_fourier_call, heston_cf
+from models.heston import heston_fourier_call
 
-"""Calibrate to some options to get good initial estimate, than calibrate to the rest, try
+"""Calibrate to some options to get good initial estimate, then calibrate to the rest, try
 also lower max_nfev"""
 
 
@@ -116,7 +115,7 @@ def plot_market_data(market_data):
     fig.savefig(r"_output/market_data_points.pdf")
 
 
-market_data = obtain_market_data('20200212')
+market_data = obtain_market_data('20200219')
 # plot_market_data(market_data)
 
 # output = heston_calibrate_fft(market_data)

@@ -1,6 +1,6 @@
 import numpy as np
 
-from scipy.integrate import quad, quadrature
+from scipy.integrate import quad
 
 
 # e.g. Carr Madan 1999
@@ -16,8 +16,8 @@ def fourier_call(strike, ttm, cf, params):
 
 
 # e.g. FGGS10 Appendix III
-# actually we get call for damp > 0 and put for damp < -1
-def fourier_call_dampened_itm(strike, ttm, cf, params, damp=1.9):
+# we get call for damp > 0 and put for damp < -1
+def fourier_call_dampened_itm(strike, ttm, cf, params, damp=1.9, cutoff=np.inf):
 
     def psi(u):
         return cf(u - (damp + 1) * 1j, ttm, params) / \
@@ -26,13 +26,9 @@ def fourier_call_dampened_itm(strike, ttm, cf, params, damp=1.9):
 
     def int1(u): return np.exp(-1j * u * np.log(strike)) * psi(u)
 
-    # itm = np.exp(-params['RATE'] * ttm) * \
-    #       np.exp(-damp * np.log(strike)) / np.pi * \
-    #       quad(int1, 0, np.inf)[0]
-
     itm = np.exp(-params['RATE'] * ttm) * \
           np.exp(-damp * np.log(strike)) / np.pi * \
-          quad(int1, 0, 50)[0]
+          quad(int1, 0, cutoff)[0]
 
     return itm
 

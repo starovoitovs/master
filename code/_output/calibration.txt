@@ -1,0 +1,13 @@
+ active_mask: array([0, 0, 0, 0, 0])
+        cost: 1516.683346828069
+         fun: array([55.07600833])
+        grad: array([-261.4340041 , -248.22276187, -108.7011566 , -290.29106885,
+       -456.75517137])
+         jac: array([[-4.74678562, -4.50691271, -1.97365713, -5.27073544, -8.29317856]])
+     message: 'The maximum number of function evaluations is exceeded.'
+        nfev: 500
+        njev: 487
+  optimality: 456.7551713686096
+      status: 0
+     success: False
+           x: array([ 1.43161629,  0.75624231, -0.72184847,  1.69871076,  0.82034431])

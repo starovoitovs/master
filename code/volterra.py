@@ -8,7 +8,8 @@ class VIESolver:
 
     def __init__(self, params):
 
-        assert -1 / np.sqrt(2) < params['RHO'] < 1 / np.sqrt(2)
+        # although asserted in the paper, in practice can be omitted
+        # assert -1 / np.sqrt(2) < params['RHO'] < 1 / np.sqrt(2)
 
         self.delta = 0
         self.n = 0

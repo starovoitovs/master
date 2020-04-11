@@ -4,20 +4,20 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from black_scholes import bs_call, bs_implied_vol, bs_cf
+from black_scholes import bs_call, bs_implied_vol, bs_cf, bs_put
 from fourier import fft_calls, fourier_call, fourier_call_dampened_itm, fourier_call_dampened_otm
 from heston import heston_fourier_call, heston_critical_time, heston_cf, heston_explicit_call, heston_critical_moment
 from rough_heston import rough_heston_critical_time, rough_heston_cf_pade, rough_heston_fourier_call, h_pade, \
     rough_heston_cf_adams
-from vie import VIESolver
 from xutils import fracderivative
 from params import params
 
 
 class TestBSMImpliedVol(unittest.TestCase):
+
     TTM = 1
     SPOT = 100
-    STRIKE = 100
+    STRIKE = 90
     RATE = 0.05
     VOL = 0.1
     PRICE = 10
@@ -55,29 +55,99 @@ class TestRoughHestonExplosionTime(unittest.TestCase):
 class TestBSMFourier(unittest.TestCase):
 
     def test_bsm_fourier_pricing(self):
+
         ttm = 0.1
 
-        params = {
+        ps = {
             'SPOT': 1,
             'RATE': 0.03,
             'SIGMA': 0.1,
         }
 
-        strikes = np.exp(np.linspace(-1, 1, 32)) * params['SPOT']
+        strikes = np.exp(np.linspace(-1, 1, 32)) * ps['SPOT']
 
-        bs_prices = [bs_call(ttm, strike, params['SPOT'], params['RATE'], params['SIGMA']) for strike in strikes]
-        fourier_prices = [fourier_call(strike, ttm, bs_cf, params) for strike in strikes]
-        fourier_itm_prices = [fourier_call_dampened_itm(strike, ttm, bs_cf, params) for strike in strikes]
-        fourier_otm_prices = [fourier_call_dampened_otm(strike, ttm, bs_cf, params) for strike in strikes]
-        fft_prices = fft_calls(ttm, strikes, bs_cf, params)
+        prices = []
+        columns = []
 
-        df = pd.DataFrame(zip(bs_prices, fourier_prices, fourier_itm_prices, fourier_otm_prices, fft_prices),
-                          columns=['BSM', 'Fourier Non-Dampened', 'Fourier Dampened ITM', 'Fourier Dampened OTM',
-                                   'FFT'])
-        pd.set_option('display.max_rows', 500)
-        pd.set_option('display.max_columns', 500)
-        pd.set_option('display.width', 1000)
-        print(df.round(4))
+        cf = bs_cf
+
+        columns += ['BSM CALL']
+        prices += [[bs_call(ttm, strike, ps['SPOT'], ps['RATE'], ps['SIGMA']) for strike in strikes]]
+
+        columns += ['BSM PUT']
+        prices += [[bs_put(ttm, strike, ps['SPOT'], ps['RATE'], ps['SIGMA']) for strike in strikes]]
+
+        columns += ['Fourier Non-Damped CALL']
+        prices += [[fourier_call(strike, ttm, cf, ps) for strike in strikes]]
+
+        columns += ['Fourier Damped ITM CALL 0.1']
+        prices += [[fourier_call_dampened_itm(strike, ttm, cf, ps, damp=0.1) for strike in strikes]]
+
+        columns += ['Fourier Damped ITM CALL 1.1']
+        prices += [[fourier_call_dampened_itm(strike, ttm, cf, ps, damp=1.1) for strike in strikes]]
+
+        columns += ['Fourier Damped ITM CALL 4.1']
+        prices += [[fourier_call_dampened_itm(strike, ttm, cf, ps, damp=4.1) for strike in strikes]]
+
+        columns += ['Fourier Damped ITM PUT -1.1']
+        prices += [[fourier_call_dampened_itm(strike, ttm, cf, ps, damp=-1.1) for strike in strikes]]
+
+        columns += ['Fourier Damped ITM PUT -2.1']
+        prices += [[fourier_call_dampened_itm(strike, ttm, cf, ps, damp=-2.1) for strike in strikes]]
+
+        columns += ['Fourier Damped ITM PUT -4.1']
+        prices += [[fourier_call_dampened_itm(strike, ttm, cf, ps, damp=-4.1) for strike in strikes]]
+
+        columns += ['Fourier Damped OTM CALL']
+        prices += [[fourier_call_dampened_otm(strike, ttm, cf, ps) for strike in strikes]]
+
+        df = pd.DataFrame(np.transpose(prices), columns=columns, index=strikes)
+
+        df.to_csv(r"../_output/bsm_prices.csv")
+
+
+class TestHestonFourier(unittest.TestCase):
+
+    def test_bsm_fourier_pricing(self):
+
+        ttm = 0.1
+
+        ps = params['CUSTOM']
+
+        strikes = np.exp(np.linspace(-1, 1, 32)) * ps['SPOT']
+
+        prices = []
+        columns = []
+
+        cf = heston_cf
+
+        columns += ['Fourier Non-Damped']
+        prices += [[fourier_call(strike, ttm, cf, ps) for strike in strikes]]
+
+        columns += ['Fourier Damped ITM CALL 0.1']
+        prices += [[fourier_call_dampened_itm(strike, ttm, cf, ps, damp=0.1) for strike in strikes]]
+
+        columns += ['Fourier Damped ITM CALL 1.1']
+        prices += [[fourier_call_dampened_itm(strike, ttm, cf, ps, damp=1.1) for strike in strikes]]
+
+        columns += ['Fourier Damped ITM CALL 4.1']
+        prices += [[fourier_call_dampened_itm(strike, ttm, cf, ps, damp=4.1) for strike in strikes]]
+
+        columns += ['Fourier Damped ITM PUT -1.1']
+        prices += [[fourier_call_dampened_itm(strike, ttm, cf, ps, damp=-1.1) for strike in strikes]]
+
+        columns += ['Fourier Damped ITM PUT -2.1']
+        prices += [[fourier_call_dampened_itm(strike, ttm, cf, ps, damp=-2.1) for strike in strikes]]
+
+        columns += ['Fourier Damped ITM PUT -4.1']
+        prices += [[fourier_call_dampened_itm(strike, ttm, cf, ps, damp=-4.1) for strike in strikes]]
+
+        columns += ['Fourier Damped OTM']
+        prices += [[fourier_call_dampened_otm(strike, ttm, cf, ps) for strike in strikes]]
+
+        df = pd.DataFrame(np.transpose(prices), columns=columns, index=strikes)
+
+        df.to_csv(r"../_output/heston_prices.csv")
 
 
 class TestHestonCallPrice(unittest.TestCase):
@@ -119,12 +189,11 @@ class TestHestonFFTPricing(unittest.TestCase):
 class TestRoughHestonCharacteristicFunction(unittest.TestCase):
 
     def test_compare_heston_characteristic_function(self):
+
         us = np.linspace(-5, 5, 41)
         ttm = 1
-        ys1 = [rough_heston_cf_adams(u, ttm, params['CUSTOM'])[-1] for u in us]
-        ys2 = np.vectorize(heston_cf)(us, ttm, params['CUSTOM'])
-
-        print(ys1)
+        ys1 = [rough_heston_cf_adams(u, ttm, params['CUSTOM']) for u in us]
+        ys2 = [heston_cf(u, ttm, params['CUSTOM']) for u in us]
 
         import matplotlib.pyplot as plt
         plt.plot(us, ys1)
@@ -141,17 +210,17 @@ class TestRoughHestonCharacteristicFunction(unittest.TestCase):
 
         import matplotlib.pyplot as plt
 
-        # ys1 = [rough_heston_cf_adams(u, ttm, ps) for u in us]
-        # plt.plot(us, ys1, label="Rough Heston (Adams 0.99)")
-
-        ys3 = np.vectorize(heston_cf)(us, ttm, ps)
+        # Heston
+        ys3 = [heston_cf(u, ttm, ps) for u in us]
         plt.plot(us, ys3, label="Heston")
 
+        # Rough Heston Pade
         for alpha in 0.99,:
             ps['ALPHA'] = alpha
             ys2 = np.vectorize(rough_heston_cf_pade)(us, ttm, ps)
             plt.plot(us, ys2, label=f"Rough Heston (Pade {alpha})")
 
+        # Rough Heston Adams
         for alpha in 0.99,:
             ps['ALPHA'] = alpha
             ys2 = [rough_heston_cf_adams(u, ttm, ps) for u in us]
@@ -203,7 +272,7 @@ class TestRoughHestonFourierCallPrice(unittest.TestCase):
 
         print(output['HESTON'])
 
-        output['HESTON'].to_csv()
+        output['HESTON'].to_csv(r"_output/heston.csv")
 
         # change model to rough model
         ps['ALPHA'] = 0.6
@@ -215,4 +284,4 @@ class TestRoughHestonFourierCallPrice(unittest.TestCase):
 
             output['ROUGHHESTON'][ttm] = ivs
 
-        output['HESTON'].to_csv(r'_output/rough_heston.csv')
+        output['ROUGHHESTON'].to_csv(r"_output/rough_heston.csv")

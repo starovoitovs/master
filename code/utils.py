@@ -17,10 +17,10 @@ def fracderivative(f, t, alpha, n=10):
     return np.sum(coeffs * fns) / h ** alpha
 
 
-def lee_right(u, ttm):
+def lee_right(ttm, u):
     x = u - 1
     return (2 - 4 * (np.sqrt(x ** 2 + x) - x)) / ttm
 
 
-def lee_left(u, ttm):
+def lee_left(ttm, u):
     return (2 - 4 * (np.sqrt(u ** 2 - u) + u)) / ttm
