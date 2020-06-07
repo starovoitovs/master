@@ -45,4 +45,4 @@ def bs_put(ttm, strike, spot, rate, sigma):
 
 
 def bs_cf(u, t, params):
-    return np.exp(1j * u * (np.log(params['SPOT']) + (params['RATE'] - 1/2 * params['SIGMA'] * t)) - 1/2 * u ** 2 * params['SIGMA'] ** 2 * t)
+    return np.exp(1j * u * (np.log(params['SPOT']) + (params['RATE'] - 1/2 * params['SIGMA'] ** 2 * t)) - 1/2 * u ** 2 * params['SIGMA'] ** 2 * t)
