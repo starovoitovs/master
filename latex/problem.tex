@@ -1,0 +1,334 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsthm}
+\theoremstyle{plain}
+
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[citestyle=alphabetic,minalphanames=5]{biblatex}
+\usepackage{hyperref}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{enumerate}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{10pt}
+
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{lemma}[proposition]{Lemma}
+\newtheorem{remark}[proposition]{Remark}
+\newtheorem{definition}[proposition]{Definition}
+\newtheorem{theorem}[proposition]{Theorem}
+\newtheorem{corollary}[proposition]{Corollary}
+
+\addbibresource{master.bib}
+
+\begin{document}
+
+\section{Problem}
+
+\begin{definition}
+
+Let $f: \mathbb R_+\rightarrow \mathbb R$ be a function defined on the positive real numbers. The \emph{Riemann–Liouville fractional integral} and \emph{fractional derivative} of order $\alpha\in(0, 1]$ are given by
+
+$$
+\begin{aligned}
+I^{\alpha} f(t)&=\frac{1}{\Gamma(\alpha)} \int_{0}^{t}(t-s)^{\alpha-1} f(s) ds \\[10pt]
+D^{\alpha} f(t)&=\frac{1}{\Gamma(1-\alpha)}\left( \frac{d}{d t} \right) \int_{0}^{t}(t-s)^{-\alpha} f(s) d s.
+\end{aligned}
+$$
+
+\end{definition}
+
+\vspace{10pt}
+
+Let $\alpha \in \left(\frac 12, 1\right)$. The original problem is given by the fractional Riccati equation
+
+\begin{equation}
+\label{eq: fractional riccati formulation}
+\begin{aligned}
+D^\alpha\psi(t) &= c_0+c_1 \psi(t)+c_2 \psi(t)^{2}\\
+\psi(0) &= 0 \\[10pt]
+\end{aligned}
+\end{equation}
+
+This equation is akin to ordinary Riccati equation (ODE where non-linearity is given by a square polynomial), but the ordinary differential operator is replaced by the fractional one. Applying fractional integration operator $I^\alpha$ to both sides of the equation leads to equivalent formulation of the problem in terms of the Volterra integral equation \eqref{eq: original volterra equation}. This integral equation has singular power law kernel and non-linearity is given by a square polynomial.
+
+\begin{equation}
+\label{eq: original volterra equation}
+\begin{aligned}
+\psi(t) &= \frac{1}{\Gamma(\alpha)} \int _0^t (t-\tau)^{\alpha-1} (c_0+c_1 \psi(\tau)+c_2 \psi(\tau)^{2}) d\tau\\
+\psi(0) &= 0 \\
+\end{aligned}
+\end{equation}
+
+\vspace{5pt}
+
+We assume that constants $c_0, c_1, c_2$ are picked so that the solution of the equation explodes in finite time $0<T^*<\infty$. Our goal is to find expansion of the solution near the explosion, i.e. asymptotic expansion in terms of $(T^*-t)$ as $t\rightarrow T^*$.
+
+\begin{remark}
+Note that the equation $f'=f^2$ with $f(0) = 1$ is solved by $f(t) = \frac{1}{1-t}$. It suggests that, for example, $D^\alpha f = f^2$ with $f(0) = 1$ should have $f(t) \sim \frac{1}{(1-t)^\alpha}$ near explosion.
+\end{remark}
+
+Our conjecture is that 
+
+$$
+\psi(t) \sim c_{-1}\cdot (T^*-t)^{-\alpha} + c_0 + c_1\cdot (T^*-t)^\alpha + c_2\cdot (T^*-t)^{2\alpha} + \dots \qquad \qquad \text{as } t\uparrow T^*
+$$
+
+\vspace{5pt}
+
+so the explosive term is of order $(T^*-t)^{-\alpha}$, and the remaining terms are $O(1)$.
+
+We reinforce our conjecture for the highest-order term by following consideration. Let us make an ansatz $\psi(t) = \int_u ^\infty(T^* -t)^s f(s)ds$ for some density $f(s)$ and try to figure out the value of $u$ (which is going to be the power of the highest order near explosion $(T^* - t)$ as $t\rightarrow T^*$). Plugging back into original equation \eqref{eq: fractional riccati formulation} leads to
+
+$$
+\int_u ^\infty C \cdot(T^*-t)^{s-\alpha} f(s)ds = c_0 + c_1 \int_u ^\infty (T^*-t) f(s) ds + c_2 \int_u ^\infty\int_u ^\infty(T^*-t)^{s+z} f(s)f(z) dsdz .
+$$
+
+From this we can read $u - \alpha = 2u$ and hence $u = -\alpha$. From this we conclude that the explosion must be of order $(T^*-t)^{-\alpha}$. It agrees with the explosion order of the Riccati ODE for $\alpha=1$ obtained in \cite{FGGS10}.
+
+\section{Attempt}
+
+We want to use the ansatz that was proposed for this particular problem in \cite{RO96} and use some techniques in \cite{BH75}. In the end of this section, we will see that the ansatz in the present state is deficient, and we ask whether we can remediate the ansatz. Throughout this section, we sweep several analytic considerations under the rug (existence of integral, shifting the contour etc.), which will have to be addressed separately once the ansatz is fixed.
+
+\subsection{Rescaling}
+
+The solution of \eqref{eq: original volterra equation} runs from $0$ to explosion time $T^*$. We want to rescale the equation so that the function runs from 0 to $\infty$. Then we can apply integral transform techinques.
+
+Let $\eta_{0}:=\frac{1}{T^{*}(s)}$ and consider $\eta:=\frac{1}{T^{*}(s)-t}-\eta_{0}$. Define
+
+$$
+w(\eta):=\psi\left(s, T^{*}(s)-\frac{1}{\eta+\eta_{0}}\right).
+$$
+
+Then the function $w$ satisfies
+
+$$
+\begin{aligned}
+w(\eta) &\sim \eta \int _0^\infty K(s)F(\eta s)ds.
+\end{aligned}
+$$
+
+with kernel and non-linearity defined as ($\theta(s)$ is Heaviside step function and $\eta_0 > 0$)
+
+\begin{equation} \label{integrand definitions}
+K(s) := \frac{1}{\Gamma(\alpha)}(1-s)^{\alpha-1} \theta(1-s) \qquad F(\eta s) := (\eta s + \eta _0) ^{-1-\alpha} (c_0 + c_1w(\eta s) + c_2 w(\eta s)^2).
+\end{equation}
+
+Due to our choice of coefficients $c_0, c_1, c_2$ the function $w(\eta)\rightarrow \infty$ as $\eta \rightarrow \infty$. The equation cannot be solved explicitly, the goal is to obtain the asymptotic expansion of $w(\eta)$ as $\eta \rightarrow \infty$.
+
+\subsection{Mellin transform of the equation}
+
+Recall the definition of the Mellin transform
+
+$$
+\mathrm M [f(s); z] = \int _0^\infty s^{z-1} f(s) ds.
+$$
+
+Once formulated as above, we can use Parseval formula for the Mellin transform and rewrite the problem as
+
+\begin{equation}\label{parseval}
+w(\eta) \sim \frac{\eta}{2 \pi i} \int_{c-i \infty}^{c+i \infty} \mathrm{M}[K(s) ; 1-z] \mathrm{M}[F(\eta s) ; z] d z
+\end{equation}
+
+whereas $\Re (c)$ is in the analiticity strip of both Mellin transforms.
+
+\subsection{Ansatz}
+
+Previous section suggests to use the ansatz
+
+\begin{equation} \label{ansatz}
+w(\eta) = \sum_{k=1}^{-\infty} d_k \eta^{\alpha k} = d_1 \eta^\alpha + d_0 + d_{-1} \eta ^ {-\alpha} + \dots = d_1 \eta^\alpha + d_0 + O(\eta^{-\alpha})
+\end{equation}
+
+The idea is to calculate expansion of the right-hand side of \eqref{parseval} and match the coefficients to calculate $d_1$ and $d_0$.
+
+\subsection{Mellin transform of the kernel}
+
+$$
+M[K(s); 1-z] = \frac{\Gamma(1-z)}{\Gamma(1+\alpha-z)} = - \sum _{n=0} ^\infty \frac{(-1)^n}{\Gamma(\alpha-n) n!} \left(\frac{1}{z-(n+1)}\right).
+$$
+
+First equality comes from $B(x,y)=\frac{\Gamma(x)\Gamma(y)}{\Gamma(x+y)}$, second equality comes from the termwise Mellin transform of the Taylor expansion of the kernel. It has poles at $z = 1, 2, 3, \dots$ and analytical for $\Re (z) < 1$.
+
+\subsection{Mellin transform of the non-linearity}
+
+If we plug in $w(\eta)$ from ansatz \eqref{ansatz} above into the non-linearity $F(\eta s)$ defined in \eqref{integrand definitions}, we obtain
+
+$$
+F(\eta s) = c_2 d_1^2  (\eta s)^{-1+\alpha} + (2 c_2 d_0d_1 + c_1 d_1)(\eta s)^{-1} + O((\eta s)^{-1-\alpha} ).
+$$
+
+Mellin transforms of the first two terms above are
+
+\begin{equation} \label{mellin transforms of non-linearity}
+\begin{aligned}
+M\left[c_2 d_{1}^{2} (\eta s)^{-1+\alpha}; z\right] &= (c_2 d_{1}^{2}) \frac{\eta ^{-z}}{z-(1-\alpha)}\\
+M\left[(2 c_2 d_0d_1 + c_1 d_1) (\eta s)^{-1}; z\right] &= (2 c_2 d_0d_1 + c_1 d_1) \frac{\eta ^{-z}}{z-1}.
+\end{aligned}
+\end{equation}
+
+So we see that each term in the expansion of $F(\eta s)$ leads to the pole of $\mathrm{M}[F(\eta s) ; z]$ at $z = 1-\alpha, 1, 1+\alpha, \dots$. In order for the Mellin transforms to exist, we require $z < 1-\alpha$. Hence $\mathrm{M}[F(\eta s) ; z]$ is analytic for $\Re(z) < 1-\alpha$.
+
+\subsection{Shifting the contour to the right}
+
+Recall from \eqref{parseval} that using Parseval formula we have rewritten our problem as
+
+$$
+w(\eta) \sim \frac{\eta}{2 \pi i} \int_{c-i \infty}^{c+i \infty} \mathrm{M}[K(s) ; 1-z] \mathrm{M}[F(\eta s) ; z] d z.
+$$
+
+Now that we obtained analiticity strips of the integrands above, we see it is required that $\Re (c) < 1 - \alpha$. The idea now is to shift the integration contour to the right. Each pole $z = 1 - \alpha, 1, 1 + \alpha, \dots$ of the integrand will yield a term in the expansion for integral on the right-hand side. We want to use Cauchy integral formula
+
+$$
+f^{(n)}(a)=\frac{n !}{2 \pi i} \oint_{\gamma} \frac{f(z)}{(z-a)^{n+1}} d z
+$$
+
+to calculate the integrals around the poles.
+
+Assume at this point that we can shift the contour to the right. We plug in the Mellin transforms calculated above and shift the contour to the right so that $u \in (1, 1+\alpha)$ to obtain first two terms in the integral expansion:
+
+$$
+\begin{aligned}
+d_1 \eta ^\alpha + d_0 + \dots &\sim \frac{\eta}{2 \pi i} \int_{\gamma_1} \left( \frac{\Gamma(1-z)}{\Gamma(1+\alpha-z)}\right) \left(c_{2} d_{1}^{2}\right)  \frac{\eta^{-z}}{z-(1-\alpha)} \\
+&+ \frac{\eta}{2 \pi i} \int_{\gamma_0} \left( \frac{\Gamma(1-z)}{\Gamma(1+\alpha-z)}\right) \left(2 c_{2} d_{0} d_{1}+c_{1} d_{1}\right) \frac{\eta^{-z}}{z-1} \\
+&+ \frac{\eta}{2 \pi i} \int_{u - i\infty} ^{u + i \infty} \mathbf{M}[K(s) ; 1-z] \mathbf{M}[F(\eta s) ; z] d z
+\end{aligned}
+$$
+
+such that $\gamma_1$ encloses $z=1-\alpha$ and $\gamma_0$ encloses $z=1$.
+
+\subsection{First coefficient $d_1$}
+
+The contour integral around $z = 1-\alpha$ can be calculated with Cauchy integral formula 
+
+$$
+\frac{\eta}{2 \pi i} \int_{\gamma_1} \left(c_{2} d_{1}^{2}\right) \left( \frac{\Gamma(1-z)}{\Gamma(1+\alpha-z)}\right) \frac{\eta^{-z}}{z-(1-\alpha)} = c_2 d_1^2 \frac{\Gamma(\alpha)}{\Gamma(2\alpha)} \eta ^\alpha
+$$
+
+Matching the first coefficient leads to 
+
+$$
+d_1 \eta ^\alpha = c_2 d_1^2 \frac{\Gamma(\alpha)}{\Gamma(2\alpha)} \eta ^\alpha
+\qquad \text{and thus} \qquad
+d_1 = \frac{\Gamma(2\alpha)}{c_2 \Gamma(\alpha)}
+$$
+
+\subsection{Second coefficient $d_0$}
+
+The problem that arises now is that both kernel and non-linearity have pole at $z=1$. Hence the integrand has the pole of order 2 and Cauchy integral formula will involve derivative of $\eta ^{-z}$, which will yield the term of order $\log (\eta)$.
+
+We calculate the contour integral around $z=1$
+
+\begin{equation} \label{cauchy integral formula for second coefficient}
+\begin{array}{l}
+\frac{\eta}{2 \pi i} \int_{\gamma_0} \frac{\Gamma(1-z)}{\Gamma(1+\alpha-z)} M[F(\eta s) ; z] d z \\ [10pt]
+= \eta \cdot \text{Res}(\Gamma(1-z), 1) \cdot \text{Res}(M[F(\eta s); z], 1) \cdot \left. [f'(z)] \right| _{z = 1, f(z) = \frac{\eta^{-z}}{\Gamma(1+\alpha-z)}} \\ [10pt]
+= (2c_2 d_{0} d_{1}+c_1 d_{1}) \frac{-\log (\eta) \Gamma(\alpha) + \Gamma'(\alpha)}{\Gamma(\alpha)^2}.
+\end{array}
+\end{equation}
+
+Matching the coefficient $d_0$ leads to
+
+$$
+d_0 = (2c_2 d_{0} d_{1}+c_1 d_{1}) \frac{\Gamma'(\alpha)}{\Gamma(\alpha)^2}.
+$$
+
+Since we know the first coefficient $d_1$, the above equation can be solved for $d_0$.
+
+\textbf{However}, we are left with the residual term $- \frac{(2c_2 d_{0} d_{1}+c_1 d_{1}) \Gamma(\alpha)}{\Gamma(\alpha)^2} \log (\eta)$ of order $ \log (\eta)$, which cannot be matched with anything on the left-hand side, since our ansatz did not have a logarithmic term. Hence this ansatz does not work directly and perhaps should be modified.
+
+\section{Logarithmic ansatz}
+
+\begin{remark}
+
+Note that although obtaining expansion coefficients for the higher order is not unuseful, for the Rough Heston density expansion ultimately we don't need higher order terms, leading order coefficient should perfectly suffice for our applications. We need, however, to justify something like $w(\eta) = D\eta^\alpha + O(\eta^\varepsilon)$ to proceed.
+
+\end{remark}
+
+Note that extending the ansatz to involve the logarithmic term
+
+$$
+w(\eta) = d_1 \eta^\alpha + d_\text{log} \log (\eta) + d_0 + d_{-1} \eta ^ {-\alpha} + \dots
+$$
+
+results in the pole of order 3 in the integrand (from partial integration of $\int s^{z-2} \log (s) ds$ plus pole of order one in kernel). Cauchy integral formula in \eqref{cauchy integral formula for second coefficient} will therefore involve second derivative and lead to the term of order $\log ^2 (\eta)$ on the right-hand side of \eqref{parseval}, so the matching of the coefficients will fail again. Including $\log ^2 (\eta)$ into the ansatz will lead to $\log ^3 (\eta)$ on the right-hand side of \eqref{parseval} and so on.
+
+It might indicate that we can try the ansatz
+
+\begin{equation} \label{log ansatz}
+w(\eta) = D \eta^\alpha + \sum_{k=1}^N a_{k, N} \log ^k (\eta) + d_0 + d_{-1} \eta ^ {-\alpha} + \dots
+\end{equation}
+
+with $D = \frac{\Gamma(2\alpha)}{\frac 12 \xi ^2 \Gamma(\alpha)}$ fixed constant that we know from before, and then let $N\rightarrow \infty$. We write $a_{k,N}$ to underscore that matched constants depend on $N$.
+
+\begin{remark}
+
+Note that the expansion from the ansatz \eqref{log ansatz} is probably not too useful on its own merits. However, we might try to find the relation between the coefficients $a_k$, and establish, for example, that the series $\sum_{k=1}^N a_{k, N} \log ^k (\eta)$ converges as $N\rightarrow \infty$ (for example, by simple ratio test). Once we establish some relation for $a_k$, in the light of the previous remark, we can consider whether $\sum_{k=1}^N a_{k, N} \log ^k (\eta)$ is $O(\eta ^\varepsilon)$ for some $\varepsilon$ (sole convergence of the series does not grant that, however).
+
+\end{remark}
+
+We now try to work out some details of the ansatz \eqref{log ansatz}.
+
+\begin{proposition}
+
+We can show by iterative integration by parts that
+
+$$
+M[s^\beta \log ^k(s);z] = \frac{(-1)^k \cdot k!}{(z+\beta)^k}
+$$
+
+\end{proposition}
+
+We will need $k$-th derivative (instead of the first one) in the Cauchy integral theorem when matching around $z=1$ in \eqref{cauchy integral formula for second coefficient}.
+
+\begin{proposition}
+
+For the derivative holds
+
+$$
+\left[\frac{\eta^{-z}}{\Gamma(1+\alpha-z)}\right]^{(k)}_{z=1} = \sum_{i=0}^{k}(-1)^i \binom ki \eta^{-1}  \left[(\Gamma(1+\alpha-z) ^{-1})\right]^{(k-i)}_{z=1} \log ^i (\eta).
+$$
+
+\end{proposition}
+
+We see that in the above proposition we have derivative of the reciprocal of the gamma function, which is not a nice term and will account for a bunch of constants.
+
+Now we consider all the terms in the integral expansion that will have the pole at $z=1$. The previous two propositions yield
+
+\begin{proposition}
+
+\begin{equation} \label{log ansatz expansion at z=1}
+\begin{aligned}
+\sum_{k=0}^\infty \frac{\eta}{2\pi i }\int \eta^{-z} \frac{\Gamma(1-z)}{\Gamma(1+\alpha-z)} \frac{(-1)^k \cdot k!}{(z-1)^{k+1}} dz &= \sum_{k=0}^N\sum_{i=0}^{k+1} (-1) ^{k+i} \binom ki \left[\Gamma(1+\alpha-z)^{-1}\right]^{(k-i)}_{z=1} \log^i(\eta) \\
+&= \sum_{i=1}^{N+1}\left\{\sum_{k=i-1}^{N} (-1) ^{k+i} \binom ki \left[\Gamma(1+\alpha-z)^{-1}\right]^{(k-i)}_{z=1}\right\}\log^i(\eta) \\
+&\qquad+\sum_{k=0}^N (-1)^k \left[\Gamma(1+\alpha-z) ^{-1}\right] ^{(k)} _{z=1}
+\end{aligned}
+\end{equation}
+
+\end{proposition}
+
+The above proposition gives us an explicit, albeit arcane, formula for $a_{k,N}$ (in particular, involving the constant term $a_{0, N})$. Matching the coefficients does not seem easy due to the derivative of the reciprocal of gamma function, plus that the coefficient $a_{k,N}$ is a sum, at this point we should probably consider the asymptotics of this coefficient (using Stirling formula etc).
+
+Ultimate goal would be to prove somehow that $\eqref{log ansatz expansion at z=1} = O(\eta^\varepsilon)$ for some small $\varepsilon>0$.
+
+\section{Other ideas}
+
+\begin{itemize}
+    \item $\sum _{j,k} \eta ^{j+k} $ for some subset of $\mathbb Z^2$.
+    \item Choose $d_0$ so that the second order term vanishes, and consider what will happen with the rest.
+    \item Hypergeometric functions are helpful.
+\end{itemize}
+
+\newpage
+
+\printbibliography
+
+\end{document}

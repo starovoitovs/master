@@ -1,0 +1,40 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsthm}
+\theoremstyle{plain}
+
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[citestyle=alphabetic,minalphanames=5]{biblatex}
+\usepackage{hyperref}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{10pt}
+
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{remark}[proposition]{Remark}
+
+\addbibresource{master.bib}
+
+\begin{document}
+
+\section{Numerical implementation of the Fractional Riccati}
+
+\subsection{El Euch and Rosenbaum}
+
+Explicit solution
+
+\subsection{Rational approximation by Gatheral}
+
+Much simpler and faster.
+
+\section{Implied vol}
+
+\section{Local vol}
+
+\end{document}
